@@ -1,5 +1,6 @@
 export enum RequestType {
     get = 'GET',
+    post = 'POST',
     delete = 'DELETE'
 }
 
@@ -8,9 +9,9 @@ export interface CLA {
     request: RequestType
 }
 
-const requestTypes: string[] = [RequestType.get, RequestType.delete]
+const requestTypes: string[] = [RequestType.get, RequestType.post, RequestType.delete]
 
-const verifyCommandLineArgument = (name, value): boolean => {
+const verifyCommandLineArgument = (name: string, value: string): boolean => {
 
     switch(name) {
         case '--request':

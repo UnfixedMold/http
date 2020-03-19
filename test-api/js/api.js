@@ -6,6 +6,7 @@ exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
 var database_1 = require("./database");
 var app = express_1["default"]();
+app.use(express_1["default"].json());
 // GET books
 app.get('/books', function (req, res) { return res.json(database_1.books); });
 app.get('/books/:id', function (_a, res) {
@@ -17,6 +18,15 @@ app.get('/books/:id', function (_a, res) {
     else {
         res.json(book);
     }
+});
+// POST books
+app.post('/books', function (_a, res) {
+    var body = _a.body;
+    var book = database_1.books.find(function (b) { return b.id == body.id; });
+    if (book) {
+        res.status(409).end("Book is already added");
+    }
+    res.status(201).end("Book added");
 });
 // DELETE books
 app["delete"]('/books', function (req, res) { return res.status(200).end("All books deleted"); });

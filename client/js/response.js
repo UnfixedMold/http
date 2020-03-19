@@ -20,9 +20,13 @@ var splitBufferBy = function (buffer, delimeter) {
     return [first, second];
 };
 var parseStatusLine = function (buffer) {
-    var _a = splitBufferBy(buffer, ' '), protocol = _a[0], statusMessage = _a[1];
-    var status = splitBufferBy(statusMessage, ' ')[0];
-    return { protocol: protocol.toString(), status: Number(status.toString()) };
+    var _a = splitBufferBy(buffer, ' '), protocol = _a[0], statusInfo = _a[1];
+    var _b = splitBufferBy(statusInfo, ' '), statusCode = _b[0], statusMessage = _b[1];
+    return {
+        protocol: protocol.toString(),
+        statusCode: Number(statusCode.toString()),
+        statusMessage: statusMessage.toString()
+    };
 };
 var parseHeaders = function (buffer) {
     var delimeter = '\r\n';

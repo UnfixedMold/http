@@ -1,6 +1,7 @@
 interface StatusLine {
     protocol: String,
-    status: Number
+    statusCode: Number,
+    statusMessage: String
 }
 
 interface Header {
@@ -10,13 +11,15 @@ interface Header {
 
 interface Info {
     protocol: String,
-    status: Number,
+    statusCode: Number,
+    statusMessage: String,
     headers: Header[]
 }
 
 export interface HttpResponse {
     protocol: String,
-    status: Number,
+    statusCode: Number,
+    statusMessage: String,
     headers: Header[],
     content: String
 }
@@ -37,11 +40,15 @@ const splitBufferBy = (buffer: Buffer, delimeter: string): Buffer[] => {
 
 const parseStatusLine = (buffer: Buffer): StatusLine => {
 
-    const [protocol, statusMessage] = splitBufferBy(buffer, ' ')
+    const [protocol, statusInfo] = splitBufferBy(buffer, ' ')
 
-    const [ status ] = splitBufferBy(statusMessage, ' ')
+    const [ statusCode, statusMessage ] = splitBufferBy(statusInfo, ' ')
 
-    return { protocol: protocol.toString(), status: Number(status.toString()) }
+    return { 
+        protocol: protocol.toString(),
+        statusCode: Number(statusCode.toString()),
+        statusMessage: statusMessage.toString()
+    }
 }
 
 const parseHeaders = (buffer: Buffer): Header[] => {

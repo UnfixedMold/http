@@ -15,15 +15,16 @@ var main = function () {
         console.error(err);
         return 0;
     }
-    // Creating socket, initializing TCP connection and sending request
+    // Creating client socket, initializing TCP connection with host and sending request
     var client = net_1.createConnection(parsedUrl.port ? Number(parsedUrl.port) : 80, parsedUrl.hostname, function () {
         client.write(cla.request + " " + parsedUrl.pathname + " HTTP/1.1\r\nHost: " + parsedUrl.hostname + "\r\n\r\n");
     });
     // Client events
     client.on('data', function (data) {
-        var res = response_1.parseResponse(data);
-        if (res.status >= 200 && res.status < 300) {
-            console.log(res.content);
+        var _a = response_1.parseResponse(data), statusCode = _a.statusCode, statusMessage = _a.statusMessage, content = _a.content;
+        console.log("\nStatus code: " + statusCode + "\nStatus message: " + statusMessage + "\n");
+        if (content) {
+            console.log("Content:\n" + content + "\n");
         }
         client.end();
     });

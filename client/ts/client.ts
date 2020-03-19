@@ -18,7 +18,7 @@ const main = () => {
         return 0
     }    
 
-    // Creating socket, initializing TCP connection and sending request
+    // Creating client socket, initializing TCP connection with host and sending request
 
     const client = createConnection(
         parsedUrl.port ? Number(parsedUrl.port) : 80,
@@ -32,17 +32,19 @@ const main = () => {
 
     client.on('data', (data: Buffer) => {
 
-        const res: HttpResponse = parseResponse(data);
+        const { statusCode, statusMessage, content } = parseResponse(data);
 
-        if(res.status >= 200 && res.status < 300 ) {
-            console.log(res.content)
-        }
+        console.log(`\nStatus code: ${statusCode}\nStatus message: ${statusMessage}\n`)
         
-        client.end();
+        if(content) {
+            console.log(`Content:\n${content}\n`)
+        }
+
+        client.end()
     })
 
     client.on('error', (err: Error) =>  {
-        console.error(err);
+        console.error(err)
     })
 }
 

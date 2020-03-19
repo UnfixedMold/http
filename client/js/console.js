@@ -3,9 +3,10 @@ exports.__esModule = true;
 var RequestType;
 (function (RequestType) {
     RequestType["get"] = "GET";
+    RequestType["post"] = "POST";
     RequestType["delete"] = "DELETE";
 })(RequestType = exports.RequestType || (exports.RequestType = {}));
-var requestTypes = [RequestType.get, RequestType["delete"]];
+var requestTypes = [RequestType.get, RequestType.post, RequestType["delete"]];
 var verifyCommandLineArgument = function (name, value) {
     switch (name) {
         case '--request':
@@ -15,6 +16,7 @@ var verifyCommandLineArgument = function (name, value) {
     }
 };
 exports.parseCommandLineArguments = function () {
+    console.log(process.argv);
     if (process.argv.length < 3 || process.argv[2].startsWith('--')) {
         throw Error("Invalid command line arguments");
     }
