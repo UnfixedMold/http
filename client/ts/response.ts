@@ -14,7 +14,7 @@ interface Info {
     headers: Header[]
 }
 
-interface HttpResponse {
+export interface HttpResponse {
     protocol: String,
     status: Number,
     headers: Header[],
@@ -81,7 +81,7 @@ const parseInfo = (buffer: Buffer): Info => {
     }
 }
 
-const parseResponse = (buffer: Buffer): HttpResponse => {
+export const parseResponse = (buffer: Buffer): HttpResponse => {
     const [info, content] = splitBufferBy(buffer, '\r\n\r\n')
 
     return {
@@ -89,5 +89,3 @@ const parseResponse = (buffer: Buffer): HttpResponse => {
         content: content.toString()
     }
 }
-
-module.exports = { parseResponse }

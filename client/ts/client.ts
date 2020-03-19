@@ -1,5 +1,5 @@
-const net = require('net')
-const response = require('./response')
+import net from 'net'
+import { parseResponse, HttpResponse } from './response'
 
 enum RequestType {
     get = 'GET',
@@ -13,12 +13,12 @@ const main = () => {
     // Reading command line arguments
 
     if (process.argv.length < 2) {
-        return 0;
+        return 0
     }
 
     // Parsing command line url
 
-    let parsedUrl: URL; 
+    let parsedUrl: URL
 
     try {
         parsedUrl = new URL(process.argv[2]);
@@ -47,7 +47,7 @@ const main = () => {
 
     client.on('data', (data: Buffer) => {
 
-        const res = response.parseResponse(data);
+        const res: HttpResponse = parseResponse(data);
 
         if(res.status == 200 ) {
             console.log(res.content)
@@ -57,7 +57,7 @@ const main = () => {
     });
 
     client.on('end', () => {
-        console.log('disconnected from server');
+        // console.log('disconnected from server');
     });
 
     client.on('error', (data: Error) =>  {
