@@ -1,47 +1,32 @@
-import net from 'net'
+import { createConnection } from 'net'
 import { parseResponse, HttpResponse } from './response'
-
-enum RequestType {
-    get = 'GET',
-    delete = 'DELETE'
-}
-
-const requestTypes: String[] = [RequestType.get, RequestType.delete]
+import { CLA, parseCommandLineArguments} from './console'
 
 const main = () => {
 
-    // Reading command line arguments
+    // Parsing command line arguments
 
-    if (process.argv.length < 2) {
-        return 0
-    }
-
-    // Parsing command line url
-
+    let cla: CLA
     let parsedUrl: URL
-
     try {
-        parsedUrl = new URL(process.argv[2]);
+
+        cla = parseCommandLineArguments()
+        parsedUrl = new URL('http://' + cla.url);
+
     } catch(err) {
-        console.log("Invalid url")
-        return 0;
-    }
-    
-    let type: String = RequestType.get;
+        console.error(err)
+        return 0
+    }    
 
-    if(process.argv.length > 3 && requestTypes.includes(process.argv[3])) {
-        type = process.argv[3]
-    }
+    // Creating socket, initializing TCP connection and sending request
 
-    // Creating socket & connecting to host & sending request
-
-    const client = net.createConnection(
+    const client = createConnection(
         parsedUrl.port ? Number(parsedUrl.port) : 80,
         parsedUrl.hostname,
         () => {
-            client.write(`${type} ${parsedUrl.pathname} HTTP/1.1\r\nHost: ${parsedUrl.hostname}\r\n\r\n`);
+            client.write(`${cla.request} ${parsedUrl.pathname} HTTP/1.1\r\nHost: ${parsedUrl.hostname}\r\n\r\n`)
         }
-    );
+    )
 
     // Client events
 
@@ -49,20 +34,16 @@ const main = () => {
 
         const res: HttpResponse = parseResponse(data);
 
-        if(res.status == 200 ) {
+        if(res.status >= 200 && res.status < 300 ) {
             console.log(res.content)
         }
         
         client.end();
-    });
+    })
 
-    client.on('end', () => {
-        // console.log('disconnected from server');
-    });
+    client.on('error', (err: Error) =>  {
+        console.error(err);
+    })
+}
 
-    client.on('error', (data: Error) =>  {
-        console.log(data);
-    });
-};
-
-main();
+main()
