@@ -12,7 +12,11 @@ const verifyCommandLineArgument = (name: string): boolean => {
 
 export const parseCommandLineArguments = (): CLA => {
 
-    const  url: URL = new URL(process.argv[2])
+    if(process.argv.length < 3 || process.argv[2].startsWith('--')) {
+        throw Error("Invalid command line arguments")
+    }
+
+    const url: URL = new URL(process.argv[2])
     
     let cla: CLA = { url, type: RequestType.get, headers: [{ name: 'Host', value: url.hostname }] }
 
@@ -36,10 +40,6 @@ export const parseCommandLineArguments = (): CLA => {
             default:
                 return value
         }
-    }
-
-    if(process.argv.length < 3 || process.argv[2].startsWith('--')) {
-        throw Error("Invalid command line arguments")
     }
 
     let argIndex = 3
