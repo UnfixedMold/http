@@ -42,6 +42,7 @@ From ```/client/js``` directory run
 node client http://www.example.com
 ```
 
+**Command line arguments:**
 
 Argument| Usage | Description | Options | Default
 ------------- | ------------- | ------------- | -------------  | ------------- 
@@ -49,6 +50,7 @@ Argument| Usage | Description | Options | Default
 **--type** | *Optional* | HTTP request type | GET, POST, PUT, DELETE | GET
 **--headers**  | *Optional* | HTTP request headers | - | -
 **--payload** | *Optional* | HTTP request message body | - | -
+
 **Example:**
 
 ```
