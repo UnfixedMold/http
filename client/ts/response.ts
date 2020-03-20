@@ -1,48 +1,10 @@
-interface StatusLine {
-    protocol: String,
-    statusCode: Number,
-    statusMessage: String
-}
-
-interface Header {
-    name: String,
-    value: String
-}
-
-interface Info {
-    protocol: String,
-    statusCode: Number,
-    statusMessage: String,
-    headers: Header[]
-}
-
-export interface HttpResponse {
-    protocol: String,
-    statusCode: Number,
-    statusMessage: String,
-    headers: Header[],
-    content: String
-}
-
-const splitBufferBy = (buffer: Buffer, delimeter: string): Buffer[] => {
-
-    const index = buffer.indexOf(delimeter)
-
-    let first = Buffer.alloc(index)
-    buffer.copy(first, 0, 0, index)
-
-    let second = Buffer.alloc(Buffer.byteLength(buffer) - (index + delimeter.length))
-
-    buffer.copy(second, 0, index + delimeter.length)
-
-    return [first, second]
-}
+import { StatusLine, Info, HttpResponse, Header, splitBufferBy } from './helpers'
 
 const parseStatusLine = (buffer: Buffer): StatusLine => {
 
     const [protocol, statusInfo] = splitBufferBy(buffer, ' ')
 
-    const [ statusCode, statusMessage ] = splitBufferBy(statusInfo, ' ')
+    const [statusCode, statusMessage] = splitBufferBy(statusInfo, ' ')
 
     return { 
         protocol: protocol.toString(),

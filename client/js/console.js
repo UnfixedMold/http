@@ -1,32 +1,43 @@
 "use strict";
 exports.__esModule = true;
-var RequestType;
-(function (RequestType) {
-    RequestType["get"] = "GET";
-    RequestType["post"] = "POST";
-    RequestType["delete"] = "DELETE";
-})(RequestType = exports.RequestType || (exports.RequestType = {}));
-var requestTypes = [RequestType.get, RequestType.post, RequestType["delete"]];
-var verifyCommandLineArgument = function (name, value) {
-    switch (name) {
-        case '--request':
-            return requestTypes.includes(value);
-        default:
-            return false;
-    }
+var helpers_1 = require("./helpers");
+var ArgumentType;
+(function (ArgumentType) {
+    ArgumentType["type"] = "--type";
+    ArgumentType["headers"] = "--headers";
+    ArgumentType["payload"] = "--payload";
+})(ArgumentType = exports.ArgumentType || (exports.ArgumentType = {}));
+var verifyCommandLineArgument = function (name) {
+    return Object.values(ArgumentType).includes(name);
 };
 exports.parseCommandLineArguments = function () {
-    console.log(process.argv);
+    var url = new URL(process.argv[2]);
+    var cla = { url: url, type: helpers_1.RequestType.get, headers: [{ name: 'Host', value: url.hostname }] };
+    var getCommandLineArgument = function (name, value) {
+        switch (name) {
+            case ArgumentType.type:
+                if (Object.values(helpers_1.RequestType).includes(value)) {
+                    return value;
+                }
+                return cla.type;
+            case ArgumentType.headers:
+                var initialHeaders = cla.headers;
+                var userHeaders = helpers_1.getJsonHeaders(value);
+                return helpers_1.mergeJsonHeaders(initialHeaders, userHeaders);
+            default:
+                return value;
+        }
+    };
     if (process.argv.length < 3 || process.argv[2].startsWith('--')) {
         throw Error("Invalid command line arguments");
     }
-    var cla = { url: process.argv[2], request: RequestType.get };
-    var leftoverLen = process.argv.length - 3;
-    for (var i = 0; i < Math.floor(leftoverLen / 2); i += 2) {
-        var name_1 = process.argv[3 + i], value = process.argv[3 + i + 1];
-        if (verifyCommandLineArgument(name_1, value)) {
-            cla[name_1.slice(2)] = value;
+    var argIndex = 3;
+    while ((argIndex + 2) <= process.argv.length) {
+        var name_1 = process.argv[argIndex], value = process.argv[argIndex + 1];
+        if (verifyCommandLineArgument(name_1)) {
+            cla[name_1.slice(2)] = getCommandLineArgument(name_1, value);
         }
+        argIndex += 2;
     }
     return cla;
 };

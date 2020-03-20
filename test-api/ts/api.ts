@@ -1,6 +1,8 @@
 import express from 'express'
 import { books, Book } from "./database"
 
+const port = 3000;
+
 const app = express()
 app.use(express.json());
 
@@ -20,15 +22,36 @@ app.get('/books/:id', ({ params }, res) => {
 
 // POST books
 
-app.post('/books', ({ body }, res) => {
+app.post('/books/:id', ({ params, body }, res) => {
 
-    const book = books.find(b => b.id == body.id)
+    if(!(params && params.id && body && body.name)) {
+        res.status(400).end("Invalid request arguments")
+    }
+
+    const book = books.find(b => b.id == params.id)
 
     if(book) {
         res.status(409).end("Book is already added")
     }
 
     res.status(201).end("Book added")
+})
+
+// PUT books
+
+app.put('/books/:id', ({ params, body }, res) => {
+
+    if(!(params && params.id && body && body.name)) {
+        res.status(400).end("Invalid request arguments")
+    }
+
+    const book = books.find(b => b.id == params.id)
+
+    if(!book) {
+        res.status(400).end("Book not found")
+    }
+
+    res.status(200).end("Book edited")
 })
 
 // DELETE books
@@ -46,6 +69,6 @@ app.delete('/books/:id', ({ params }, res) => {
 })
 
 
-app.listen(3000)
+app.listen(port)
 
 

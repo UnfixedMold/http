@@ -1,43 +1,58 @@
-export enum RequestType {
-    get = 'GET',
-    post = 'POST',
-    delete = 'DELETE'
+import { RequestType, CLA, getJsonHeaders, mergeJsonHeaders } from './helpers'
+
+export enum ArgumentType {
+    type = '--type',
+    headers = '--headers',
+    payload = '--payload'
 }
 
-export interface CLA {
-    url: string,
-    request: RequestType
-}
-
-const requestTypes: string[] = [RequestType.get, RequestType.post, RequestType.delete]
-
-const verifyCommandLineArgument = (name: string, value: string): boolean => {
-
-    switch(name) {
-        case '--request':
-            return requestTypes.includes(value)
-        default :
-            return false
-    }
+const verifyCommandLineArgument = (name: string): boolean => {
+    return Object.values(ArgumentType).includes(name as ArgumentType)
 }
 
 export const parseCommandLineArguments = (): CLA => {
+
+    const  url: URL = new URL(process.argv[2])
+    
+    let cla: CLA = { url, type: RequestType.get, headers: [{ name: 'Host', value: url.hostname }] }
+
+    const getCommandLineArgument = (name: string, value: string) => {
+    
+        switch(name) {
+            case ArgumentType.type:
+
+                if(Object.values(RequestType).includes(value as RequestType)) {
+                    return value as RequestType
+                }
+            
+                return cla.type
+
+            case ArgumentType.headers:
+
+                const initialHeaders = cla.headers
+                const userHeaders = getJsonHeaders(value)
+                return mergeJsonHeaders(initialHeaders, userHeaders)
+
+            default:
+                return value
+        }
+    }
 
     if(process.argv.length < 3 || process.argv[2].startsWith('--')) {
         throw Error("Invalid command line arguments")
     }
 
-    let cla: CLA = { url: process.argv[2], request: RequestType.get }
+    let argIndex = 3
 
-    const leftoverLen = process.argv.length - 3;
+    while((argIndex + 2) <= process.argv.length) {
 
-    for(let i = 0; i<Math.floor(leftoverLen/2); i+=2) {
-        
-        const name = process.argv[3 + i], value = process.argv[3 + i + 1]
+        const name = process.argv[argIndex], value = process.argv[argIndex + 1]
 
-        if(verifyCommandLineArgument(name, value)) {
-            cla[name.slice(2)] = value
+        if(verifyCommandLineArgument(name)) {
+            cla[name.slice(2)] = getCommandLineArgument(name, value)
         }
+
+        argIndex+=2
     }
 
     return cla

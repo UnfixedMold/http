@@ -11,17 +11,10 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 exports.__esModule = true;
-var splitBufferBy = function (buffer, delimeter) {
-    var index = buffer.indexOf(delimeter);
-    var first = Buffer.alloc(index);
-    buffer.copy(first, 0, 0, index);
-    var second = Buffer.alloc(Buffer.byteLength(buffer) - (index + delimeter.length));
-    buffer.copy(second, 0, index + delimeter.length);
-    return [first, second];
-};
+var helpers_1 = require("./helpers");
 var parseStatusLine = function (buffer) {
-    var _a = splitBufferBy(buffer, ' '), protocol = _a[0], statusInfo = _a[1];
-    var _b = splitBufferBy(statusInfo, ' '), statusCode = _b[0], statusMessage = _b[1];
+    var _a = helpers_1.splitBufferBy(buffer, ' '), protocol = _a[0], statusInfo = _a[1];
+    var _b = helpers_1.splitBufferBy(statusInfo, ' '), statusCode = _b[0], statusMessage = _b[1];
     return {
         protocol: protocol.toString(),
         statusCode: Number(statusCode.toString()),
@@ -33,12 +26,12 @@ var parseHeaders = function (buffer) {
     var headers = [];
     var tempBuffer = buffer;
     while (tempBuffer.includes(delimeter)) {
-        var _a = splitBufferBy(tempBuffer, delimeter), header = _a[0], leftover = _a[1];
+        var _a = helpers_1.splitBufferBy(tempBuffer, delimeter), header = _a[0], leftover = _a[1];
         headers.push(header);
         tempBuffer = leftover;
     }
     return headers.map(function (header) {
-        var _a = splitBufferBy(header, ": "), name = _a[0], value = _a[1];
+        var _a = helpers_1.splitBufferBy(header, ": "), name = _a[0], value = _a[1];
         return {
             name: name.toString(),
             value: value.toString()
@@ -46,10 +39,10 @@ var parseHeaders = function (buffer) {
     });
 };
 var parseInfo = function (buffer) {
-    var _a = splitBufferBy(buffer, '\r\n'), statusLine = _a[0], headerFields = _a[1];
+    var _a = helpers_1.splitBufferBy(buffer, '\r\n'), statusLine = _a[0], headerFields = _a[1];
     return __assign(__assign({}, parseStatusLine(statusLine)), { headers: parseHeaders(headerFields) });
 };
 exports.parseResponse = function (buffer) {
-    var _a = splitBufferBy(buffer, '\r\n\r\n'), info = _a[0], content = _a[1];
+    var _a = helpers_1.splitBufferBy(buffer, '\r\n\r\n'), info = _a[0], content = _a[1];
     return __assign(__assign({}, parseInfo(info)), { content: content.toString() });
 };

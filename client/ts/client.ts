@@ -1,30 +1,29 @@
 import { createConnection } from 'net'
-import { parseResponse, HttpResponse } from './response'
-import { CLA, parseCommandLineArguments} from './console'
+import { parseResponse } from './response'
+import { HttpResponse, CLA } from './helpers'
+import { parseCommandLineArguments } from './console'
+import { getRequest } from './request'
 
 const main = () => {
 
     // Parsing command line arguments
 
-    let cla: CLA
-    let parsedUrl: URL
+    let args: CLA
     try {
-
-        cla = parseCommandLineArguments()
-        parsedUrl = new URL('http://' + cla.url);
-
+        args = parseCommandLineArguments()
     } catch(err) {
         console.error(err)
         return 0
-    }    
+    }
 
     // Creating client socket, initializing TCP connection with host and sending request
 
     const client = createConnection(
-        parsedUrl.port ? Number(parsedUrl.port) : 80,
-        parsedUrl.hostname,
+        args.url.port ? Number(args.url.port) : 80,
+        args.url.hostname,
         () => {
-            client.write(`${cla.request} ${parsedUrl.pathname} HTTP/1.1\r\nHost: ${parsedUrl.hostname}\r\n\r\n`)
+            const request = getRequest(args)
+            client.write(request)
         }
     )
 
@@ -32,7 +31,7 @@ const main = () => {
 
     client.on('data', (data: Buffer) => {
 
-        const { statusCode, statusMessage, content } = parseResponse(data);
+        const { statusCode, statusMessage, content }: HttpResponse = parseResponse(data);
 
         console.log(`\nStatus code: ${statusCode}\nStatus message: ${statusMessage}\n`)
         

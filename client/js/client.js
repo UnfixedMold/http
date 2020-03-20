@@ -3,21 +3,21 @@ exports.__esModule = true;
 var net_1 = require("net");
 var response_1 = require("./response");
 var console_1 = require("./console");
+var request_1 = require("./request");
 var main = function () {
     // Parsing command line arguments
-    var cla;
-    var parsedUrl;
+    var args;
     try {
-        cla = console_1.parseCommandLineArguments();
-        parsedUrl = new URL('http://' + cla.url);
+        args = console_1.parseCommandLineArguments();
     }
     catch (err) {
         console.error(err);
         return 0;
     }
     // Creating client socket, initializing TCP connection with host and sending request
-    var client = net_1.createConnection(parsedUrl.port ? Number(parsedUrl.port) : 80, parsedUrl.hostname, function () {
-        client.write(cla.request + " " + parsedUrl.pathname + " HTTP/1.1\r\nHost: " + parsedUrl.hostname + "\r\n\r\n");
+    var client = net_1.createConnection(args.url.port ? Number(args.url.port) : 80, args.url.hostname, function () {
+        var request = request_1.getRequest(args);
+        client.write(request);
     });
     // Client events
     client.on('data', function (data) {

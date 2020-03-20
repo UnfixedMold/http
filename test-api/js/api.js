@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
 var database_1 = require("./database");
+var port = 3000;
 var app = express_1["default"]();
 app.use(express_1["default"].json());
 // GET books
@@ -20,13 +21,28 @@ app.get('/books/:id', function (_a, res) {
     }
 });
 // POST books
-app.post('/books', function (_a, res) {
-    var body = _a.body;
-    var book = database_1.books.find(function (b) { return b.id == body.id; });
+app.post('/books/:id', function (_a, res) {
+    var params = _a.params, body = _a.body;
+    if (!(params && params.id && body && body.name)) {
+        res.status(400).end("Invalid request arguments");
+    }
+    var book = database_1.books.find(function (b) { return b.id == params.id; });
     if (book) {
         res.status(409).end("Book is already added");
     }
     res.status(201).end("Book added");
+});
+// PUT books
+app.put('/books/:id', function (_a, res) {
+    var params = _a.params, body = _a.body;
+    if (!(params && params.id && body && body.name)) {
+        res.status(400).end("Invalid request arguments");
+    }
+    var book = database_1.books.find(function (b) { return b.id == params.id; });
+    if (!book) {
+        res.status(400).end("Book not found");
+    }
+    res.status(200).end("Book edited");
 });
 // DELETE books
 app["delete"]('/books', function (req, res) { return res.status(200).end("All books deleted"); });
@@ -38,4 +54,4 @@ app["delete"]('/books/:id', function (_a, res) {
     }
     res.status(200).end("Book deleted");
 });
-app.listen(3000);
+app.listen(port);
