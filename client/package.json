@@ -9,7 +9,8 @@
   },
   "author": "Henrikas Girdzijauskas",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@types/node": "^13.9.2"
   }
 }
