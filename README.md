@@ -44,12 +44,12 @@ node client http://www.example.com
 
 **Command line arguments:**
 
-Argument| Usage | Description | Options | Default
-------------- | ------------- | ------------- | -------------  | ------------- 
-**[url]**  | *Required* | HTTP host address. Always the first argument, no prefix needed | - | -
-**--type [type]** | *Optional* | HTTP request type | GET, POST, PUT, DELETE | GET
-**--headers [headers]** | *Optional* | HTTP request headers | - | -
-**--payload [payload]** | *Optional* | HTTP request message body | - | -
+Argument                 | Usage | Description | Options | Default
+-----------------------  | ------------- | ------------- | -------------  | ------------- 
+**[url]**                | *Required* | HTTP host address. Always the first argument, no prefix needed | - | -
+**--type [type]**        | *Optional* | HTTP request type | GET, POST, PUT, DELETE | GET
+**--headers [headers]**  | *Optional* | HTTP request headers | - | -
+**--payload [payload]**  | *Optional* | HTTP request message body | - | -
 
 **Example:**
 
