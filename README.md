@@ -19,7 +19,7 @@ From ```/client``` or ```/test-api``` directory
 ```
 npm install
 ```
-2. Compile
+2. Compile to java-script
 
 ```
 tsc
